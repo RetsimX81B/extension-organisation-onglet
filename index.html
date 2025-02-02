@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réorganisation des Onglets</title>
+    <style>
+        body {
+            width: 200px;
+            font-family: Arial, sans-serif;
+            padding: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        .groupButton {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .colorButton {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="moveTabButton" class="groupButton">Déplacer cet onglet</button>
+    <button id="addToGroupButton" class="groupButton">Ajouter au groupe</button>
+    <button id="changeColorButton" class="colorButton">Changer couleur</button>
+
+    <script>
+        // 1. Gestion de la réorganisation des onglets
+        chrome.runtime.onInstalled.addListener(() => {
+            chrome.storage.local.set({ "tabGroups": {} });
+        });
+
+        // Ajouter un onglet à un groupe
+        function addToGroup(tabId, groupName) {
+            chrome.storage.local.get("tabGroups", (data) => {
+                let groups = data.tabGroups || {};
+                if (!groups[groupName]) {
+                    groups[groupName] = [];
+                }
+                groups[groupName].push(tabId);
+                chrome.storage.local.set({ "tabGroups": groups });
+            });
+        }
+
+        // Déplacer l'onglet à une position spécifique
+        function moveTab(tabId, index) {
+            chrome.tabs.query({}, (tabs) => {
+                const tabIndex = tabs.findIndex((tab) => tab.id === tabId);
+                if (tabIndex !== -1) {
+                    chrome.tabs.move(tabId, { index });
+                }
+            });
+        }
+
+        // Quand un onglet est créé, assigner un groupe par défaut
+        chrome.tabs.onCreated.addListener((tab) => {
+            addToGroup(tab.id, 'Groupe Par Défaut');
+        });
+
+        // 2. Popup.js - Fonctionnalité du popup
+        document.getElementById('moveTabButton').addEventListener('click', () => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const currentTab = tabs[0];
+                chrome.tabs.move(currentTab.id, { index: 0 }); // Déplacer l'onglet en première position
+            });
+        });
+
+        document.getElementById('addToGroupButton').addEventListener('click', () => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const currentTab = tabs[0];
+                const groupName = prompt('Entrez le nom du groupe :');
+                if (groupName) {
+                    chrome.runtime.sendMessage({ type: 'addToGroup', tabId: currentTab.id, groupName });
+                }
+            });
+        });
+
+        document.getElementById('changeColorButton').addEventListener('click', () => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const currentTab = tabs[0];
+                const color = prompt('Entrez la couleur (ex. red, blue, etc.) :');
+                chrome.scripting.executeScript({
+                    target: { tabId: currentTab.id },
+                     func: (color) => { document.body.style.backgroundColor = color; },
+                     args: [color]
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

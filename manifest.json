@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Réorganisation des Onglets",
+  "description": "Réorganiser, grouper et classer les onglets par catégories ou couleurs",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "background": {
+  "service_worker": "index.html"
+  },
+  "action": {
+    "default_popup": "popup.html"    
+  }
+}
