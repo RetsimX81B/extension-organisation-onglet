@@ -4,13 +4,15 @@
   "description": "Réorganiser, grouper et classer les onglets par catégories ou couleurs",
   "version": "1.0",
   "permissions": [
-    "tabs",
-    "storage"
+  "tabs",
+  "storage",
+  "tabGroups",
+  "scripting"
   ],
   "background": {
-  "service_worker": "index.html"
+  "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "index.html"    
+    "default_popup": "popup.html"    
   }
 }
