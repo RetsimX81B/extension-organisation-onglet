@@ -11,6 +11,6 @@
   "service_worker": "index.html"
   },
   "action": {
-    "default_popup": "popup.html"    
+    "default_popup": "index.html"    
   }
 }
