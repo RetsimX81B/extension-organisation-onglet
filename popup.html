@@ -26,7 +26,7 @@
             transition: all 0.5s;
         }
 
-        .groupButton:hover{
+        .groupButton:hover {
             background-color: rgba(56, 146, 29, 0.747);
             transform: scale(1.05);
             color: aliceblue;
@@ -34,11 +34,12 @@
 
         .colorButton {
             background-color: white;
-            color: rgba(10, 10, 73, 0.788);           
+            color: rgba(10, 10, 73, 0.788);
             border: solid 2px rgba(10, 10, 73, 0.877);
             transition: all 0.5s;
         }
-        .colorButton:hover{
+
+        .colorButton:hover {
             background-color: rgba(10, 10, 73, 0.788);
             transform: scale(1.05);
             color: aliceblue;
@@ -47,6 +48,7 @@
 </head>
 
 <body>
+    
     <button id="moveTabButton" class="groupButton">Déplacer cet onglet</button>
     <button id="addToGroupButton" class="groupButton">Ajouter au groupe</button>
     <button id="changeColorButton" class="colorButton">Changer couleur</button>
@@ -68,7 +70,6 @@
 
         document.getElementById('changeColorButton').addEventListener('click', () => {
             chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                const color = prompt('Entrez la couleur (ex. red, blue, etc.) :');
                 chrome.scripting.executeScript({
                     target: { tabId: tabs[0].id },
                     func: (color) => { document.body.style.backgroundColor = color; },
@@ -76,61 +77,9 @@
                 });
             });
         });
-
-        document.getElementById('moveTabButton').addEventListener('click', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        console.log("Onglet récupéré :", tabs);
-        if (tabs.length === 0) return; // Aucun onglet trouvé
-        chrome.tabs.move(tabs[0].id, { index: 0 }, () => {
-            if (chrome.runtime.lastError) {
-                console.error("Erreur de déplacement :", chrome.runtime.lastError);
-            } else {
-                console.log("Onglet déplacé !");
-            }
-        });
-    });
-});
-
-console.log("Tentative de récupération de l'onglet actif...");
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (chrome.runtime.lastError) {
-        console.error("Erreur Chrome API :", chrome.runtime.lastError);
-    }
-    console.log("Onglets trouvés :", tabs);
-
-    if (!tabs || tabs.length === 0) {
-        console.error("Aucun onglet trouvé !");
-        return;
-    }
-
-    const currentTab = tabs[0];
-    console.log("Onglet actif :", currentTab);
-});
-document.addEventListener("DOMContentLoaded", () => {
-            console.log("Popup chargée, ajout des écouteurs...");
-
-            document.getElementById('addToGroupButton').addEventListener('click', () => {
-                chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    if (tabs.length === 0) {
-                        console.error("Aucun onglet trouvé !");
-                        return;
-                    }
-                    const currentTab = tabs[0];
-                    const groupName = prompt('Entrez le nom du groupe :');
-                    if (groupName) {
-                        console.log("Envoi du message pour ajouter au groupe :", groupName);
-                        chrome.runtime.sendMessage({ type: 'addToGroup', tabId: currentTab.id, groupName });
-                    }
-                });
-            });
-        });
-    
-
-
-
-</script>
-<script src="popup.js"></script>
-<script src="background.js"></script>
+    </script>
+    <script src="popup.js"></script>
+    <script src="background.js"></script>
 </body>
 
 </html>
